@@ -1,13 +1,10 @@
 package tp2.partie;
 
+import tp2.graphique.FrameMenu;
+
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-
-        Partie.getInstance();
-
+        FrameMenu.getInstance().setVisible(true);
     }
 }
