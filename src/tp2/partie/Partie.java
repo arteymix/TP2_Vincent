@@ -43,6 +43,7 @@ public class Partie extends Thread {
     private ArrayList<Background> pnlBackground = new ArrayList<Background>();
     private static boolean pause;
     private Collisions mCollisions = new Collisions();
+    
 
     private Partie() {
 
@@ -62,7 +63,7 @@ public class Partie extends Thread {
         RETRAITHAUT = -2 * RouteDroite.getLongueur() - RouteTransition.getLongueur();
         RETRAITBAS = RouteDroite.getLongueur() + RouteTransition.getLongueur();
 
-        mJoueur = new Joueur();
+        mJoueur = new Joueur(getRectRouteLocation(500).x+getRectRouteLocation(500).width/2);
         Rectangle rectJoueur = getRectRouteLocation(mJoueur.getY());
         mJoueur.setX(rectJoueur.width / 2 + rectJoueur.x);
 

@@ -29,8 +29,7 @@ public class FramePartie extends JFrame {
         this.add(pnlBoard);
         this.add(fpause);
         this.add(stat);
-        stat.setLocation(0,dPnlBoard.height);
-        
+        stat.setLocation(0,dPnlBoard.height);        
         
         setTitle("SpyHunter");
         setSize(dFrame);

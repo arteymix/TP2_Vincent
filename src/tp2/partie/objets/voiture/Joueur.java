@@ -6,7 +6,7 @@ package tp2.partie.objets.voiture;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import javax.swing.ImageIcon;
+import tp2.partie.Partie;
 
 /**
  *
@@ -27,8 +27,8 @@ public class Joueur extends Voiture {
     private final static int LONGUEUR = 50;
     private boolean tirgauche = true;
 
-    public Joueur() {
-        super(PVinitial, vitessemax, deplacementlateral, accelerationmax, LARGEUR, LONGUEUR, 500, positionY, 0, 0); 
+    public Joueur(int positionX) {
+        super(PVinitial, vitessemax, deplacementlateral, accelerationmax, LARGEUR, LONGUEUR, positionX, positionY, 0, 0); 
     }
 
     @Override
@@ -87,8 +87,12 @@ public class Joueur extends Voiture {
         return nbVie;
     }
 
-    public void setNbVie(int nbVie) {
-        this.nbVie = nbVie;
+    public void retirerUneVie() {
+        nbVie--;
+        
+        if (nbVie <= 0){
+            Partie.getInstance().setPause(tirgauche);
+        }
     }
 
     public Image getImg() {
