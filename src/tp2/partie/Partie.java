@@ -316,6 +316,11 @@ public class Partie implements Runnable {
         }
     }
 
+    
+    /**
+     * asjdfhiajsdhf
+     * @param route 
+     */
     private void genererArbre(Route route) {
 
         Random r = new Random();
