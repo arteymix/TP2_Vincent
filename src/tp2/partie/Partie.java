@@ -7,6 +7,7 @@ import tp2.partie.objets.armes.Tir;
 import tp2.partie.objets.autres.Explosion;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +16,7 @@ import tp2.graphique.Carte;
 import tp2.graphique.FramePartie;
 import tp2.partie.collisions.Collisions;
 import tp2.partie.objets.autres.Background;
+import tp2.partie.objets.autres.ObjGenerique;
 import tp2.partie.objets.voiture.Civil;
 import tp2.partie.objets.voiture.Joueur;
 import tp2.partie.objets.route.Route;
@@ -34,16 +36,81 @@ public class Partie extends Thread {
     private static Partie instance;
     private Son mSon;
     private FramePartie mFramePartie;
-    private ArrayList<Arbre> arbres = new ArrayList<Arbre>();
-    private ArrayList<Tir> tirs = new ArrayList<Tir>();
-    private ArrayList<Voiture> voitures = new ArrayList<Voiture>();//Auto civiles
-    private ArrayList<Route> routes = new ArrayList<Route>();
-    private ArrayList<Explosion> explosions = new ArrayList<Explosion>();
+    private final ArrayList<Arbre> arbres = new ArrayList<Arbre>();
+    private final ArrayList<Tir> tirs = new ArrayList<Tir>();
+    private final ArrayList<Voiture> voitures = new ArrayList<Voiture>();//Auto civiles
+    private final ArrayList<Route> routes = new ArrayList<Route>();
+    private final ArrayList<Explosion> explosions = new ArrayList<Explosion>();
+    private final HashSet<ObjGenerique> mObjGeneriques = new HashSet<ObjGenerique>();
     private Joueur mJoueur;
     private ArrayList<Background> pnlBackground = new ArrayList<Background>();
     private static boolean pause;
     private Collisions mCollisions = new Collisions();
-    
+    private Retirer mRetirer = new Retirer();
+    /**
+     * Détermine si le jeu est en cours
+     */
+    private boolean mRunning = true;
+
+    public Joueur getJoueur() {
+        return mJoueur;
+    }
+
+    /**
+     * Gestion des retraits asynchrome.
+     */
+    public class Retirer extends Thread {
+
+        @Override
+        public void run() {
+
+            while (mRunning) {
+
+                System.out.println("haha");
+
+                synchronized (routes) {
+                    if (routes.get(0).getLocationY() > RETRAITBAS) {
+                        routes.remove(0);
+                    }
+                }
+
+                synchronized (arbres) {
+                    if (arbres.get(0).getY() > RETRAITBAS) {
+                        arbres.remove(0);
+                    }
+                }
+
+                synchronized (voitures) {
+                    for (Voiture toto : voitures) {
+                        if (toto.getY() > RETRAITBAS || toto.getY() < RETRAITHAUT || !toto.isVivant()) {
+                            voitures.remove(toto);
+                        }
+                    }
+                }
+
+                synchronized (tirs) {
+
+                    for (Tir pewpew : tirs) {
+                        if (pewpew.getY() < RETRAITHAUT) {
+                            tirs.remove(pewpew);
+                        }
+                    }
+                }
+
+                if (pnlBackground.get(0).getY() > mFramePartie.getPnlBoard().getHeight()) {
+                    Background b = pnlBackground.get(0);
+                    pnlBackground.remove(0);
+                    pnlBackground.add(b);
+                    pnlBackground.get(1).setY(pnlBackground.get(0).getY() - Background.getLongueur());
+                }
+                try {
+                    sleep(5);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Partie.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
 
     private Partie() {
 
@@ -63,7 +130,7 @@ public class Partie extends Thread {
         RETRAITHAUT = -2 * RouteDroite.getLongueur() - RouteTransition.getLongueur();
         RETRAITBAS = RouteDroite.getLongueur() + RouteTransition.getLongueur();
 
-        mJoueur = new Joueur(getRectRouteLocation(500).x+getRectRouteLocation(500).width/2);
+        mJoueur = new Joueur(getRectRouteLocation(500).x + getRectRouteLocation(500).width / 2);
         Rectangle rectJoueur = getRectRouteLocation(mJoueur.getY());
         mJoueur.setX(rectJoueur.width / 2 + rectJoueur.x);
 
@@ -86,32 +153,42 @@ public class Partie extends Thread {
         //  s.muteAll();
         this.start();
 
+
+
     }
 
     @Override
     public void run() {
 
-        while (true) {
-            if (!pause) {
+        mRetirer.start();
 
-                try {
-                    actionsVoitures();
-                    deplacement();
-                    detecterCollision();
-                    generer();
-                    retirer();
-                    mFramePartie.invalidate();
-                    mFramePartie.repaint();
+        while (mRunning) {
 
-                    Thread.sleep(10);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Carte.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+
+                for (Voiture toto : voitures) {
+                    toto.actions();
                 }
+                deplacement();
+                detecterCollision();
+                generer();
+                retirer();
+                mFramePartie.invalidate();
+                mFramePartie.repaint();
 
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Carte.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+
         }
     }
 
+    /**
+     * Mets les déplacements a jour
+     *
+     */
     public void deplacement() {
         mJoueur.deplacement();
 
@@ -189,29 +266,34 @@ public class Partie extends Thread {
         }
     }
 
-    private boolean collisionRoute(Rectangle pRectangle) {
-        for (Route route : routes) {
-            ArrayList<Rectangle> rRoutelist = route.getBounds();
-            for (Rectangle rRoute : rRoutelist) {
-                if (pRectangle.intersects(rRoute)) {
+    public boolean collisionRoute(Rectangle pRectangle) {
+        synchronized (routes) {
+
+            for (Route route : routes) {
+                ArrayList<Rectangle> rRoutelist = route.getBounds();
+                for (Rectangle rRoute : rRoutelist) {
+                    if (pRectangle.intersects(rRoute)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    public boolean collisionArbre(Rectangle rObjgenerique) {
+        synchronized (arbres) {
+            for (Arbre branche : arbres) {
+                Rectangle rArbre = branche.getCONTOUR();
+                if (rObjgenerique.intersects(rArbre)) {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
     }
 
-    private boolean collisionArbre(Rectangle rObjgenerique) {
-        for (Arbre branche : arbres) {
-            Rectangle rArbre = branche.getCONTOUR();
-            if (rObjgenerique.intersects(rArbre)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean collisionVoiture(Rectangle rObjgenerique, boolean comparaisonVoitureVoiture) {
+    public boolean collisionVoiture(Rectangle rObjgenerique, boolean comparaisonVoitureVoiture) {
         int i = 0;
         for (Voiture toto : voitures) {
             Rectangle rVoiture = toto.getCONTOUR();
@@ -227,7 +309,7 @@ public class Partie extends Thread {
         }
     }
 
-    private boolean collisionTir(Rectangle rObjgenerique) {
+    public boolean collisionTir(Rectangle rObjgenerique) {
         for (Tir tir : (ArrayList<Tir>) tirs.clone()) {
             Rectangle rTir = tir.getCONTOUR();
             if (rObjgenerique.intersects(rTir)) {
@@ -237,7 +319,7 @@ public class Partie extends Thread {
         return false;
     }
 
-    private boolean collisionJoueur(Rectangle rObjgenerique) {
+    public boolean collisionJoueur(Rectangle rObjgenerique) {
         Rectangle rJoueur = mJoueur.getCONTOUR();
         if (rObjgenerique.intersects(rJoueur)) {
             return true;
@@ -310,7 +392,8 @@ public class Partie extends Thread {
 
     /**
      * asjdfhiajsdhf
-     * @param route 
+     *
+     * @param route
      */
     private void genererArbre(Route route) {
 
@@ -403,42 +486,6 @@ public class Partie extends Thread {
 
     }
 
-    private void actionsVoitures() {
-        for (Voiture toto : voitures) {
-
-            Rectangle rect = getRectRouteLocation(toto.getY() + mJoueur.getVitessemax());
-            Rectangle rToto = toto.getCONTOUR();
-            Rectangle AutourRect = new Rectangle(rToto.x - 24, rToto.y - (mJoueur.getVitessemax() - 1), rToto.width + 48, rToto.height + (mJoueur.getVitessemax() - 1));
-            if (!testProblemeVoiture(AutourRect)) {
-                if (rect.x + rect.width / 2 + toto.getPositionideale(rect.width) - toto.getX() < -1) {// Si la voiture est a droite de la position ideale sur la route
-                    toto.setVx(-toto.getDeplacementlateral());
-                } else if (rect.x + rect.width / 2 + toto.getPositionideale(rect.width) - toto.getX() > 1) { // a gauche
-                    toto.setVx(toto.getDeplacementlateral());
-                } else { // sur
-                    toto.setVx(0);
-                }
-            } else {
-                Rectangle testRect = new Rectangle(rToto.x, rToto.y - mJoueur.getVitessemax() + 1, toto.getLARGEUR(), toto.getLONGUEUR());
-                boolean problemeHaut = testProblemeVoiture(testRect);
-                testRect = new Rectangle(rToto.x, rToto.y + mJoueur.getVitessemax() - 1, toto.getLARGEUR(), toto.getLONGUEUR());
-                boolean problemeBas = testProblemeVoiture(testRect);
-                testRect = new Rectangle(rToto.x - 24, rToto.y, toto.getLARGEUR(), toto.getLONGUEUR());
-                boolean problemeGauche = testProblemeVoiture(testRect);
-                testRect = new Rectangle(rToto.x + 24, rToto.y, toto.getLARGEUR(), toto.getLONGUEUR());
-                boolean problemeDroite = testProblemeVoiture(testRect);
-
-                if (problemeDroite && problemeGauche) {
-                    if (collisionVoiture(rect, problemeDroite)) {
-                    }
-                } else if (problemeDroite && !problemeGauche) {
-                    toto.setVx(-toto.getDeplacementlateral());
-                } else if (!problemeDroite && problemeGauche) {
-                    toto.setVx(toto.getDeplacementlateral());
-                }
-            }
-        }
-    }
-
     private boolean testProblemeVoiture(Rectangle testRect) {
         if (collisionVoiture(testRect, true) || !collisionRoute(testRect) || collisionJoueur(testRect)) {
             return true;
@@ -447,7 +494,7 @@ public class Partie extends Thread {
     }
 
     // Getter et Setter
-    private Rectangle getRectRouteLocation(int locationYcherche) {
+    public Rectangle getRectRouteLocation(int locationYcherche) {
         Route r = null;
         for (Route route : routes) {
             if (locationYcherche > route.getLocationY()) {

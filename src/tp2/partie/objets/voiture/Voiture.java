@@ -4,6 +4,7 @@
  */
 package tp2.partie.objets.voiture;
 
+import java.awt.Rectangle;
 import java.util.Random;
 import tp2.partie.Partie;
 import tp2.partie.collisions.Collisionnable;
@@ -54,8 +55,8 @@ public class Voiture extends ObjGenerique {
         this.setVivant(false);
 
         Partie.getInstance().getExplosions().add(new Explosion(this.getX(), this.getY()));
-       
-        
+
+
         Partie.getInstance().getVoitures().remove(this);
 
     }
@@ -140,5 +141,53 @@ public class Voiture extends ObjGenerique {
 
     public void setAcceleration(int acceleration) {
         this.dvy = acceleration;
+    }
+
+    private boolean testProblemeVoiture(Rectangle testRect) {
+        if (Partie.getInstance().collisionVoiture(testRect, true) || !Partie.getInstance().collisionRoute(testRect) || Partie.getInstance().collisionJoueur(testRect)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gestion des actions
+     */
+    @Override
+    public void actions() {
+
+        Joueur mJoueur = Partie.getInstance().getJoueur();
+
+        Rectangle rect = Partie.getInstance().getRectRouteLocation(this.getY() + mJoueur.getVitessemax());
+        Rectangle rToto = this.getCONTOUR();
+        Rectangle AutourRect = new Rectangle(rToto.x - 24, rToto.y - (mJoueur.getVitessemax() - 1), rToto.width + 48, rToto.height + (mJoueur.getVitessemax() - 1));
+        if (!testProblemeVoiture(AutourRect)) {
+            if (rect.x + rect.width / 2 + this.getPositionideale(rect.width) - this.getX() < -1) {// Si la voiture est a droite de la position ideale sur la route
+                this.setVx(-this.getDeplacementlateral());
+            } else if (rect.x + rect.width / 2 + this.getPositionideale(rect.width) - this.getX() > 1) { // a gauche
+                this.setVx(this.getDeplacementlateral());
+            } else { // sur
+                this.setVx(0);
+            }
+        } else {
+            Rectangle testRect = new Rectangle(rToto.x, rToto.y - mJoueur.getVitessemax() + 1, this.getLARGEUR(), this.getLONGUEUR());
+            boolean problemeHaut = testProblemeVoiture(testRect);
+            testRect = new Rectangle(rToto.x, rToto.y + mJoueur.getVitessemax() - 1, this.getLARGEUR(), this.getLONGUEUR());
+            boolean problemeBas = testProblemeVoiture(testRect);
+            testRect = new Rectangle(rToto.x - 24, rToto.y, this.getLARGEUR(), this.getLONGUEUR());
+            boolean problemeGauche = testProblemeVoiture(testRect);
+            testRect = new Rectangle(rToto.x + 24, rToto.y, this.getLARGEUR(), this.getLONGUEUR());
+            boolean problemeDroite = testProblemeVoiture(testRect);
+
+            if (problemeDroite && problemeGauche) {
+                if (Partie.getInstance().collisionVoiture(rect, problemeDroite)) {
+                }
+            } else if (problemeDroite && !problemeGauche) {
+                this.setVx(-this.getDeplacementlateral());
+            } else if (!problemeDroite && problemeGauche) {
+                this.setVx(this.getDeplacementlateral());
+            }
+        }
+
     }
 }

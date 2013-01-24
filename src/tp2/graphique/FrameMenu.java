@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import tp2.partie.Partie;
 
 /**
@@ -29,6 +30,7 @@ public class FrameMenu extends JFrame implements KeyListener {
      */
     private Dimension mDimension = new Dimension(1000, 700);
     private Image mBackground, mFleche;
+    private PnlPause mPanelPause = new PnlPause();
     private int mFlecheX = 20, mFlecheY = 480;
     /**
      * Menu sélectionné
@@ -43,6 +45,10 @@ public class FrameMenu extends JFrame implements KeyListener {
         mFleche = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("Ressources/flèche.png"));
         // Gestion des entrées du clavier
         addKeyListener(this);
+
+        mPanelPause.setVisible(false);
+
+        add(mPanelPause);
 
         setTitle("SpyHunter");
         setSize(mDimension);
@@ -62,9 +68,14 @@ public class FrameMenu extends JFrame implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
 
+        // Dans tous les cas, on désaffiche le paneau de highscores
+
+        mPanelPause.setVisible(false);
+
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_ENTER:
+
 
                 switch (getChoixMenu()) {
 
@@ -73,8 +84,11 @@ public class FrameMenu extends JFrame implements KeyListener {
                         Partie.newInstance();
                         break;
                     case HIGHSCORE:
+                        JOptionPane.showMessageDialog(this, "Ceci est un message");
+                        break;
                     case OPTIONS:
-
+                        mPanelPause.setVisible(true);
+                        break;
 
                 }
                 break;
@@ -102,6 +116,8 @@ public class FrameMenu extends JFrame implements KeyListener {
                 break;
 
         }
+        
+        repaint();
 
     }
 

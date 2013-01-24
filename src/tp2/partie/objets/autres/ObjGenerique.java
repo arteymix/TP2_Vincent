@@ -1,6 +1,7 @@
 package tp2.partie.objets.autres;
 
 import java.awt.Rectangle;
+import tp2.partie.Partie;
 import tp2.partie.collisions.Collisionnable;
 import tp2.partie.objets.voiture.Joueur;
 
@@ -86,5 +87,12 @@ public abstract class ObjGenerique implements Collisionnable {
 
     public void setX(int x) {
         this.x = x;
+    }
+
+    public void actions() {
+        
+    }
+
+    public void deplacements() {
     }
 }
