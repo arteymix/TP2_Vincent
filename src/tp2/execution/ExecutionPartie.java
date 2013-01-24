@@ -32,10 +32,10 @@ public class ExecutionPartie {
             case KeyEvent.VK_SPACE: // space
                 Partie.getInstance().tirJoueur();
                 break;
-            case KeyEvent.VK_INSERT :
-            case KeyEvent.VK_S :
-            case KeyEvent.VK_SHIFT :
-                Partie.getInstance().huileJoueur();  
+            case KeyEvent.VK_INSERT:
+            case KeyEvent.VK_S:
+            case KeyEvent.VK_SHIFT:
+                Partie.getInstance().getHeros().setLacheHuile(true);
                 break;
             case KeyEvent.VK_LEFT:
                 heros.setVx(-heros.getDeplacementlateral());
@@ -52,7 +52,7 @@ public class ExecutionPartie {
             case KeyEvent.VK_P:
                 Partie.getInstance().setPause(true);
                 break;
-                // Controle de la musique
+            // Controle de la musique
             case KeyEvent.VK_B:
                 Son s = Partie.getInstance().getS();
                 s.setBit8(!s.getBit8());
@@ -89,7 +89,6 @@ public class ExecutionPartie {
                 break;
         }
     }
-
 
     public static ExecutionPartie getInstance() {
         return instance;

@@ -6,7 +6,8 @@ package tp2.partie.objets.voiture;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import javax.swing.ImageIcon;
+import tp2.partie.Partie;
+import tp2.partie.objets.armes.Huile;
 
 /**
  *
@@ -26,9 +27,12 @@ public class Joueur extends Voiture {
     private final static int LARGEUR = 25;
     private final static int LONGUEUR = 50;
     private boolean tirgauche = true;
+    private boolean lacheHuile = false;
+    private int nbHuileRestant;
+    private int compteurHuile = 10;
 
-    public Joueur() {
-        super(PVinitial, vitessemax, deplacementlateral, accelerationmax, LARGEUR, LONGUEUR, 500, positionY, 0, 0); 
+    public Joueur(int positionX) {
+        super(PVinitial, vitessemax, deplacementlateral, accelerationmax, LARGEUR, LONGUEUR, positionX, positionY, 0, 0);
     }
 
     @Override
@@ -36,8 +40,7 @@ public class Joueur extends Voiture {
 
         if (x <= Math.abs(vx) && vx < 0) {
         } else if (x + 25 > 1000 && vx > 0) {
-        } //Largeur carte = 1000
-        else {
+        } else {
             x = x + vx;
         }
 
@@ -87,12 +90,35 @@ public class Joueur extends Voiture {
         return nbVie;
     }
 
-    public void setNbVie(int nbVie) {
-        this.nbVie = nbVie;
+    public void addHuile() {
+        if (compteurHuile != 0) {
+            Partie.getInstance().getmListeHuile().add(new Huile(this));
+            compteurHuile--;
+        } else {
+            compteurHuile = 10;
+            lacheHuile = false;
+        }
+    }
+
+    public boolean isLacheHuile() {
+        return lacheHuile;
+    }
+
+    public void setLacheHuile(boolean lacheHuile) {
+        this.lacheHuile = lacheHuile;
+    }
+
+    
+    public void retirerUneVie(int positionX) {
+        nbVie--;
+
+
+        if (nbVie <= 0) {
+            // Partie.getInstance().setPause(tirgauche);
+        }
     }
 
     public Image getImg() {
         return img;
     }
-
 }

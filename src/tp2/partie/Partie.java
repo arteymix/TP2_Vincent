@@ -14,6 +14,7 @@ import javax.sound.sampled.LineUnavailableException;
 import tp2.graphique.Carte;
 import tp2.graphique.FramePartie;
 import tp2.partie.collisions.Collisions;
+import tp2.partie.objets.armes.Huile;
 import tp2.partie.objets.autres.Background;
 import tp2.partie.objets.voiture.Civil;
 import tp2.partie.objets.voiture.Joueur;
@@ -39,6 +40,7 @@ public class Partie extends Thread {
     private ArrayList<Voiture> voitures = new ArrayList<Voiture>();//Auto civiles
     private ArrayList<Route> routes = new ArrayList<Route>();
     private ArrayList<Explosion> explosions = new ArrayList<Explosion>();
+    private ArrayList<Huile> mListeHuile = new ArrayList<Huile>();
     private Joueur mJoueur;
     private ArrayList<Background> pnlBackground = new ArrayList<Background>();
     private static boolean pause;
@@ -62,7 +64,7 @@ public class Partie extends Thread {
         RETRAITHAUT = -2 * RouteDroite.getLongueur() - RouteTransition.getLongueur();
         RETRAITBAS = RouteDroite.getLongueur() + RouteTransition.getLongueur();
 
-        mJoueur = new Joueur();
+        mJoueur = new Joueur(getRectRouteLocation(500).x + getRectRouteLocation(500).width / 2);
         Rectangle rectJoueur = getRectRouteLocation(mJoueur.getY());
         mJoueur.setX(rectJoueur.width / 2 + rectJoueur.x);
 
@@ -136,6 +138,11 @@ public class Partie extends Thread {
 
         for (Explosion explo : explosions) {
             explo.deplacement();
+        }
+        
+        for(Huile pHuile : mListeHuile){
+            pHuile.deplacement();
+            
         }
     }
 
@@ -264,10 +271,16 @@ public class Partie extends Thread {
             genererArbre(rDfinal);
         }
         genererVoiture();
-
+        genererHuile();
     }
     // generer un nombre aleatoire entre 0 et 29 de voiture a chaque creation de route pour un maximum de 30 auto dans la partie.
 
+    private void genererHuile(){
+        if(mJoueur.isLacheHuile()){
+            mJoueur.addHuile();
+        }
+    }
+    
     private void genererVoiture() {
         Random r = new Random();
         if (r.nextInt(30) == 0) {
@@ -309,7 +322,8 @@ public class Partie extends Thread {
 
     /**
      * asjdfhiajsdhf
-     * @param route 
+     *
+     * @param route
      */
     private void genererArbre(Route route) {
 
@@ -384,9 +398,6 @@ public class Partie extends Thread {
         voitures.remove(toto);
     }
 
-    public void huileJoueur() {
-    }
-
     public void tirJoueur() {
 
         int add = 0;
@@ -399,7 +410,6 @@ public class Partie extends Thread {
         }
 
         tirs.add(new Tir((mJoueur.getX() + add + mJoueur.getLARGEUR() / 2), mJoueur.getY()));
-
     }
 
     private void actionsVoitures() {
@@ -523,4 +533,10 @@ public class Partie extends Thread {
     public ArrayList<Background> getPnlBackground() {
         return pnlBackground;
     }
+
+    public ArrayList<Huile> getmListeHuile() {
+        return mListeHuile;
+    }
+    
+    
 }

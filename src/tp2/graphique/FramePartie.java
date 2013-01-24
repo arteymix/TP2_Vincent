@@ -38,6 +38,7 @@ public class FramePartie extends JFrame {
         setResizable(false);
         setVisible(true);
         setPause(false);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     public Carte getPnlBoard() {
