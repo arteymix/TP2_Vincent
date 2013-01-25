@@ -13,7 +13,7 @@ import java.awt.Toolkit;
  */
 public class Civil extends Voiture {
 
-    private final static int vitessemax = 50;
+    private final static int vitessemax = Joueur.getVitessejoueur() / 2;
     private final static int PVinitial = 50;
     private final static int accelerationmax = 1;
     private final static int deplacementlateral = 3;
