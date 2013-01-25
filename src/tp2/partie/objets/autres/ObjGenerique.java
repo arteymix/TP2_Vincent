@@ -1,5 +1,6 @@
 package tp2.partie.objets.autres;
 
+import java.awt.Image;
 import java.awt.Rectangle;
 import tp2.partie.Partie;
 import tp2.partie.collisions.Collisionnable;
@@ -37,10 +38,18 @@ public abstract class ObjGenerique implements Collisionnable {
         x = x + vx;
         y = y + Joueur.getVitessejoueur() - vy;
     }
+    
+        public abstract Image getImg();
+
 
     @Override
     public Rectangle getCollisionRectangle() {
         return this.getCONTOUR();
+    }
+
+    @Override
+    public void preCollision(Collisionnable C) {
+        return;
     }
 
     @Override
@@ -90,7 +99,6 @@ public abstract class ObjGenerique implements Collisionnable {
     }
 
     public void actions() {
-        
     }
 
     public void deplacements() {

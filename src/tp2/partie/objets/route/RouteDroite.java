@@ -8,9 +8,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Random;
-import javax.swing.JPanel;
-import tp2.graphique.FramePartie;
-import tp2.partie.Partie;
 import tp2.partie.objets.voiture.Joueur;
 
 /**

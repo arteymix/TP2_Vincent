@@ -27,7 +27,7 @@ public class Tir extends ObjGenerique {
         super(5, 5, x, y, 0, VITESSE_TIR);
     }
 
-    public Image getImage() {
+    public Image getImg() {
         return img;
     }
     

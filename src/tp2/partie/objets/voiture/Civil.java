@@ -26,9 +26,8 @@ public class Civil extends Voiture {
         img = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("./Ressources/charCivil.png"));
     }
 
+    @Override
     public Image getImg() {
         return img;
     }
-    
-    
 }

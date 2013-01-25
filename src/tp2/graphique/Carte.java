@@ -58,7 +58,7 @@ public class Carte extends JPanel {
 
     private void paintRoutes(Graphics g) {
 
-        for (Route route : (ArrayList<Route>) Partie.getInstance().getRoutes().clone()) {
+        for (Route route : Partie.getInstance().getRoutes()) {
             g.setColor(Color.GRAY);
             if (route instanceof RouteTransition) {
                 for (Rectangle rect : route.getBounds()) {
@@ -72,14 +72,14 @@ public class Carte extends JPanel {
     }
 
     private void paintTirs(Graphics g) {
-        for (Tir pewpew : (ArrayList<Tir>) Partie.getInstance().getTirs().clone()) {
+        for (Tir pewpew : Partie.getInstance().getTirs()) {
 
-            g.drawImage(pewpew.getImage(), pewpew.getX(), pewpew.getY(), pewpew.getLARGEUR(), pewpew.getLONGUEUR(), null);
+            g.drawImage(pewpew.getImg(), pewpew.getX(), pewpew.getY(), pewpew.getLARGEUR(), pewpew.getLONGUEUR(), null);
         }
     }
 
     private void paintVoitures(Graphics g) {
-        for (Voiture toto : (ArrayList<Voiture>) Partie.getInstance().getVoitures().clone()) {
+        for (Voiture toto : Partie.getInstance().getVoitures()) {
             //  g.setColor(Color.PINK);
             // g.fillRect(toto.getX(), toto.getY(), toto.getLARGEUR(), toto.getLONGUEUR());
             g.drawImage(((Civil) toto).getImg(), toto.getX(), toto.getY(), null);
@@ -88,7 +88,7 @@ public class Carte extends JPanel {
 
     private void paintArbres(Graphics g) {
 
-        for (Arbre branche : (ArrayList<Arbre>) Partie.getInstance().getArbres().clone()) {
+        for (Arbre branche : Partie.getInstance().getArbres()) {
             g.drawImage(branche.getImg(), branche.getX(), branche.getY(), branche.getLARGEUR(), branche.getLONGUEUR(), null);
         }
 
@@ -100,20 +100,20 @@ public class Carte extends JPanel {
     }
 
     private void paintExplosions(Graphics g) {
-        for (Explosion explo : (ArrayList<Explosion>) Partie.getInstance().getExplosions().clone()) {
+        for (Explosion explo : Partie.getInstance().getExplosions()) {
             g.drawImage(explo.getImages(), explo.getX(), explo.getY(), explo.getLARGEUR(), explo.getLONGUEUR(), null);
         }
     }
 
     private void paintBackground(Graphics g) {
-        for (Background b : (ArrayList<Background>) Partie.getInstance().getPnlBackground().clone()) {
+        for (Background b : Partie.getInstance().getPnlBackground()) {
             g.drawImage(b.getImg(), 0, b.getY(), b.getLARGEUR(), b.getLONGUEUR(), null);
         }
     }
 
     private void paintHuile(Graphics g) {
         g.setColor(Color.BLACK);
-        for (Huile pHuile : (ArrayList<Huile>) Partie.getInstance().getmListeHuile().clone()) {
+        for (Huile pHuile : Partie.getInstance().getmListeHuile()) {
             g.fillRect(pHuile.getX(), pHuile.getY(), pHuile.getLARGEUR(), pHuile.getLONGUEUR());
         }
     }
