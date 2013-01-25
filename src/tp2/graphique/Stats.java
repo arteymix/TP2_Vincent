@@ -11,6 +11,7 @@ import tp2.partie.Partie;
 import tp2.partie.objets.voiture.Joueur;
 
 /**
+ * Gestion des meilleurs scores.
  *
  * @author Vincent
  */
@@ -22,8 +23,8 @@ public class Stats extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-    paintStats(g);
-    
+        super.paint(g);
+        paintStats(g);
     }
 
     private void paintStats(Graphics g) {

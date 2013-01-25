@@ -8,7 +8,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 /**
- *
+ * Méchante limousine.
+ * 
  * @author Usager
  */
 public class Limousine extends Voiture implements Mechant {

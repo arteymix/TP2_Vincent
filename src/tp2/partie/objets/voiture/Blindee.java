@@ -8,7 +8,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 /**
- *
+ * Objet pour le véhicule blindé.
+ * 
  * @author Usager
  */
 public class Blindee extends Voiture implements Mechant{

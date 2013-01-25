@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package tp2.graphique;
 
 import tp2.graphique.panels.PanelPause;
@@ -14,36 +10,37 @@ import tp2.execution.ExecutionPause;
 
 
 /**
- *
+ * Vue pour la partie.
+ * 
  * @author Vincent
  */
 public class FramePartie extends JFrame {
 
-    private Carte pnlBoard;
-    private PanelPause fpause;
-    private Dimension dFrame = new Dimension(1005, 775);
-    private Stats stat;
+    private Carte mCarte;
+    private PanelPause mPanelPause;
+    private Dimension mDimension = new Dimension(1005, 775);
+    private Stats mStats;
 
     public FramePartie(Dimension dPnlBoard) {
-        fpause = new PanelPause();
-        pnlBoard = new Carte(dPnlBoard);
-        stat = new Stats();
-        this.add(pnlBoard);
-        this.add(fpause);
-        this.add(stat);
-        stat.setLocation(0,dPnlBoard.height);        
+        mPanelPause = new PanelPause();
+        mCarte = new Carte(dPnlBoard);
+        mStats = new Stats();
+        this.add(mCarte);
+        this.add(mPanelPause);
+        this.add(mStats);
+        mStats.setLocation(0,dPnlBoard.height);        
         
         setTitle("SpyHunter");
-        setSize(dFrame);
-        setPreferredSize(dFrame);
+        setSize(mDimension);
+        setPreferredSize(mDimension);
         setResizable(false);
         setVisible(true);
         setPause(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    public Carte getPnlBoard() {
-        return pnlBoard;
+    public Carte getCarte() {
+        return mCarte;
     }
 
     public void setPause(boolean isPause) {
@@ -51,10 +48,10 @@ public class FramePartie extends JFrame {
             removeKeyListener(blabla);
         }
         if (isPause) {
-            pnlBoard.setVisible(false);
-            fpause.setVisible(true);
-            fpause.invalidate();
-            fpause.repaint();
+            mCarte.setVisible(false);
+            mPanelPause.setVisible(true);
+            mPanelPause.invalidate();
+            mPanelPause.repaint();
 
             addKeyListener(new KeyListener() {
 
@@ -72,8 +69,8 @@ public class FramePartie extends JFrame {
                 }
             });
         } else {
-            fpause.setVisible(false);
-            pnlBoard.setVisible(true);
+            mPanelPause.setVisible(false);
+            mCarte.setVisible(true);
             addKeyListener(new KeyListener() {
 
                 @Override

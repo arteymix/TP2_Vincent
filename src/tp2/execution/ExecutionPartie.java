@@ -8,10 +8,10 @@ import java.awt.event.KeyEvent;
 import tp2.partie.Partie;
 import tp2.partie.son.Son;
 import tp2.partie.objets.voiture.Joueur;
-import tp2.partie.objets.armes.Tir;
 
 /**
- *
+ * 
+ * 
  * @author Vincent
  */
 public class ExecutionPartie {

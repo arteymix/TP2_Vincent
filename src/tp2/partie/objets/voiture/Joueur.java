@@ -1,17 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package tp2.partie.objets.voiture;
 
 import java.awt.Image;
 import java.awt.Toolkit;
 import tp2.partie.Partie;
-import tp2.partie.collisions.Collisionnable;
 import tp2.partie.objets.armes.Huile;
 
 /**
- *
+ * Classe représentant un humain.
+ * 
  * @author Vincent
  */
 public class Joueur extends Voiture {
@@ -84,10 +80,10 @@ public class Joueur extends Voiture {
         return vitessejoueur;
     }
 
-    public static int getVitesseMaxJoueur(){
+    public static int getVitesseMaxJoueur() {
         return vitessemax;
     }
-    
+
     public static void setVitessejoueur(int vitessejoueur) {
         Joueur.vitessejoueur = vitessejoueur;
     }

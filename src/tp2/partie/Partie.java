@@ -471,7 +471,7 @@ public class Partie extends Thread {
             }
         }
 
-        if (pnlBackground.get(0).getY() > mFramePartie.getPnlBoard().getHeight()) {
+        if (pnlBackground.get(0).getY() > mFramePartie.getCarte().getHeight()) {
             Background b = pnlBackground.get(0);
             pnlBackground.remove(0);
             pnlBackground.add(b);
@@ -646,7 +646,7 @@ public class Partie extends Thread {
                 }
 
 
-                if (pnlBackground.get(0).getY() > mFramePartie.getPnlBoard().getHeight()) {
+                if (pnlBackground.get(0).getY() > mFramePartie.getCarte().getHeight()) {
                     Background b = pnlBackground.get(0);
                     pnlBackground.remove(0);
                     pnlBackground.add(b);
