@@ -91,7 +91,6 @@ abstract public class Voiture extends ObjGenerique {
         y = y + Joueur.getVitessejoueur() - vy;
 
     }
-    
 
     public int getPositionideale(int largeurroute) {
 
@@ -177,7 +176,7 @@ abstract public class Voiture extends ObjGenerique {
     public void preCollision(Collisionnable c) {
 
         System.out.println("precollision");
-        
+
         Rectangle rToto = this.getCollisionRectangle();
         Joueur mJoueur = Partie.getInstance().getJoueur();
 
@@ -200,9 +199,9 @@ abstract public class Voiture extends ObjGenerique {
         if (this.getCollisionRectangle().intersects(rightRectangle)) {
             this.setVx(-Math.abs(this.getDeplacementlateral()));
         }
-        
-        if(true) {
-        return;
+
+        if (true) {
+            return;
         }
 
         Rectangle rect = Partie.getInstance().getRectRouteLocation(this.getY() + mJoueur.getVitessemax());

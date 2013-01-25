@@ -14,7 +14,7 @@ import java.awt.Toolkit;
 public class Blindee extends Voiture implements Mechant{
 
     private static int PVinitial = 50;
-    private static int vmax = Joueur.getVitessejoueur()*3 / 4;
+    private static int vmax = Joueur.getVitesseMaxJoueur()*3 / 4;
     private final static int accelerationmax = 1;
     private final static int deplacementlateral = 5;
     private final static int LARGEUR = 31;
@@ -26,7 +26,7 @@ public class Blindee extends Voiture implements Mechant{
         img = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("./Ressources/blindee.png"));
     }
 
-    public static Image getImg() {
+    public Image getImg() {
         return img;
     }
     

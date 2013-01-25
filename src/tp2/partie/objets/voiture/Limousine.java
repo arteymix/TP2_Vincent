@@ -14,7 +14,7 @@ import java.awt.Toolkit;
 public class Limousine extends Voiture implements Mechant {
 
     private static int PVinitial = 100;
-    private static int vmax = Joueur.getVitessejoueur() * 5 / 8;
+    private static int vmax = Joueur.getVitesseMaxJoueur() * 5 / 8;
     private final static int accelerationmax = 1;
     private final static int deplacementlateral = 2;
     private final static int LARGEUR = 31;
@@ -26,7 +26,7 @@ public class Limousine extends Voiture implements Mechant {
         img = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("./Ressources/limo.png"));
     }
 
-    public static Image getImg() {
+    public Image getImg() {
         return img;
     }
     

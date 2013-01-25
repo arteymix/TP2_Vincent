@@ -7,6 +7,7 @@ package tp2.partie.objets.voiture;
 import java.awt.Image;
 import java.awt.Toolkit;
 import tp2.partie.Partie;
+import tp2.partie.collisions.Collisionnable;
 import tp2.partie.objets.armes.Huile;
 
 /**
@@ -83,6 +84,10 @@ public class Joueur extends Voiture {
         return vitessejoueur;
     }
 
+    public static int getVitesseMaxJoueur(){
+        return vitessemax;
+    }
+    
     public static void setVitessejoueur(int vitessejoueur) {
         Joueur.vitessejoueur = vitessejoueur;
     }
@@ -118,7 +123,6 @@ public class Joueur extends Voiture {
         }
     }
 
- 
     @Override
     public Image getImg() {
         return img;

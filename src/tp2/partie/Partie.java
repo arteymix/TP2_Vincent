@@ -62,14 +62,14 @@ public class Partie extends Thread {
 
     private Partie() {
 
-         
-               RouteDroite rDini = new RouteDroite(mDimension);
+
+        RouteDroite rDini = new RouteDroite(mDimension);
         rDini.setPasladernierroute(true);
 
         RouteTransition.setLongueur(mDimension.height * 3);
-        
 
-        
+
+
         int decalageY = (RouteTransition.getLongueur() + RouteDroite.getLongueur() * 2 / 3);
         RouteDroite rDfinal = new RouteDroite(decalageY, rDini);
 
@@ -85,9 +85,6 @@ public class Partie extends Thread {
         mJoueur = new Joueur(getRectRouteLocation(500).x + getRectRouteLocation(500).width / 2);
         Rectangle rectJoueur = getRectRouteLocation(mJoueur.getY());
         mJoueur.setX(rectJoueur.width / 2 + rectJoueur.x);
-        
-        mVoitures.add(mJoueur);
-
         genererArbre(rDini);
         genererArbre(pRouteTransition);
         genererArbre(rDfinal);
@@ -185,9 +182,11 @@ public class Partie extends Thread {
         if (collisionArbre(rJoueur)) {
             explosions.add(new Explosion(mJoueur.getX(), mJoueur.getY()));
         }
+
         if (collisionVoiture(rJoueur, false)) {
             System.out.println("Collision Joueur - Voiture");
         }
+
         if (mJoueur.isContactroute() && !collisionRoute(rJoueur)) {
             mJoueur.setContactroute(false);
         } else if (!mJoueur.isContactroute() && collisionRoute(rJoueur)) {
@@ -206,7 +205,9 @@ public class Partie extends Thread {
             // Colision tir-route pas pertinente a faire.
         }
         // Voiture
-        for (Voiture toto : Partie.getInstance().getVoitures()) {
+        for (Voiture toto : Partie.getInstance().getVoitures()) {           
+  
+            
             Rectangle rVoiture = toto.getCONTOUR();
             if (collisionVoiture(rVoiture, true)) {
                 System.out.println("Collision Voiture - Voiture");
@@ -219,13 +220,14 @@ public class Partie extends Thread {
                 toto.setContactroute(false);
             } else if (!toto.isContactroute() && collisionRoute(rVoiture)) {
                 toto.setContactroute(true);
-
             }
+            
             if (rVoiture.intersects(rJoueur)) {
                 System.out.println("Collision Voiture - Joueur");
             }
 
         }
+        
     }
 
     public boolean collisionRoute(Rectangle pRectangle) {
@@ -505,7 +507,7 @@ public class Partie extends Thread {
         return instance;
     }
 
-    public static Partie newInstance() {        
+    public static Partie newInstance() {
         instance = new Partie();
         return instance;
     }

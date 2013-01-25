@@ -82,7 +82,7 @@ public class Carte extends JPanel {
         for (Voiture toto : Partie.getInstance().getVoitures()) {
             //  g.setColor(Color.PINK);
             // g.fillRect(toto.getX(), toto.getY(), toto.getLARGEUR(), toto.getLONGUEUR());
-            g.drawImage(((Civil) toto).getImg(), toto.getX(), toto.getY(), null);
+            g.drawImage((toto).getImg(), toto.getX(), toto.getY(), null);
         }
     }
 
