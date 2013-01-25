@@ -15,6 +15,7 @@ import javax.sound.sampled.LineUnavailableException;
 import tp2.graphique.Carte;
 import tp2.graphique.FramePartie;
 import tp2.partie.collisions.Collisions;
+import tp2.partie.objets.armes.Huile;
 import tp2.partie.objets.autres.Background;
 import tp2.partie.objets.autres.ObjGenerique;
 import tp2.partie.objets.voiture.Civil;
@@ -42,6 +43,8 @@ public class Partie extends Thread {
     private final ArrayList<Route> routes = new ArrayList<Route>();
     private final ArrayList<Explosion> explosions = new ArrayList<Explosion>();
     private final HashSet<ObjGenerique> mObjGeneriques = new HashSet<ObjGenerique>();
+
+    private ArrayList<Huile> mListeHuile = new ArrayList<Huile>();
     private Joueur mJoueur;
     private ArrayList<Background> pnlBackground = new ArrayList<Background>();
     private static boolean pause;
@@ -215,6 +218,11 @@ public class Partie extends Thread {
         for (Explosion explo : explosions) {
             explo.deplacement();
         }
+        
+        for(Huile pHuile : mListeHuile){
+            pHuile.deplacement();
+            
+        }
     }
 
     public void detecterCollision() {
@@ -347,10 +355,16 @@ public class Partie extends Thread {
             genererArbre(rDfinal);
         }
         genererVoiture();
-
+        genererHuile();
     }
     // generer un nombre aleatoire entre 0 et 29 de voiture a chaque creation de route pour un maximum de 30 auto dans la partie.
 
+    private void genererHuile(){
+        if(mJoueur.isLacheHuile()){
+            mJoueur.addHuile();
+        }
+    }
+    
     private void genererVoiture() {
         Random r = new Random();
         if (r.nextInt(30) == 0) {
@@ -468,9 +482,6 @@ public class Partie extends Thread {
         voitures.remove(toto);
     }
 
-    public void huileJoueur() {
-    }
-
     public void tirJoueur() {
 
         int add = 0;
@@ -483,7 +494,6 @@ public class Partie extends Thread {
         }
 
         tirs.add(new Tir((mJoueur.getX() + add + mJoueur.getLARGEUR() / 2), mJoueur.getY()));
-
     }
 
     private boolean testProblemeVoiture(Rectangle testRect) {
@@ -571,4 +581,10 @@ public class Partie extends Thread {
     public ArrayList<Background> getPnlBackground() {
         return pnlBackground;
     }
+
+    public ArrayList<Huile> getmListeHuile() {
+        return mListeHuile;
+    }
+    
+    
 }

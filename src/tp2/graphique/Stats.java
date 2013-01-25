@@ -23,7 +23,6 @@ public class Stats extends JPanel {
     @Override
     public void paint(Graphics g) {
     paintStats(g);
-    setSize(1000, 50);
     
     }
 
@@ -36,7 +35,7 @@ public class Stats extends JPanel {
 
         int x = 15;
         for (int i = heros.getNbVie(); i == 0; i--) {
-            g.drawImage(heros.getImg(), x, 0, null);
+            g.drawImage(heros.getImg(), x, 700, this);
             x = x + 30;
         }
 

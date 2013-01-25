@@ -14,6 +14,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 import tp2.partie.Partie;
+import tp2.partie.objets.armes.Huile;
 import tp2.partie.objets.autres.Background;
 import tp2.partie.objets.autres.Explosion;
 import tp2.partie.objets.route.Route;
@@ -52,6 +53,7 @@ public class Carte extends JPanel {
 
         paintExplosions(g);
 
+        paintHuile(g);
     }
 
     private void paintRoutes(Graphics g) {
@@ -106,6 +108,13 @@ public class Carte extends JPanel {
     private void paintBackground(Graphics g) {
         for (Background b : (ArrayList<Background>) Partie.getInstance().getPnlBackground().clone()) {
             g.drawImage(b.getImg(), 0, b.getY(), b.getLARGEUR(), b.getLONGUEUR(), null);
+        }
+    }
+
+    private void paintHuile(Graphics g) {
+        g.setColor(Color.BLACK);
+        for (Huile pHuile : (ArrayList<Huile>) Partie.getInstance().getmListeHuile().clone()) {
+            g.fillRect(pHuile.getX(), pHuile.getY(), pHuile.getLARGEUR(), pHuile.getLONGUEUR());
         }
     }
 }
