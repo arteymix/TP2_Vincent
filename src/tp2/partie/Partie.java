@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import javax.sound.sampled.LineUnavailableException;
 import tp2.graphique.Carte;
 import tp2.graphique.FramePartie;
-import tp2.graphique.Stats;
 import tp2.partie.collisions.Collisionnable;
 import tp2.partie.objets.armes.Huile;
 import tp2.partie.objets.autres.Background;
@@ -25,6 +24,9 @@ import tp2.partie.objets.voiture.Joueur;
 import tp2.partie.objets.route.Route;
 import tp2.partie.objets.route.RouteDroite;
 import tp2.partie.objets.route.RouteTransition;
+import tp2.partie.objets.voiture.Blindee;
+import tp2.partie.objets.voiture.Limousine;
+import tp2.partie.objets.voiture.Tamponneuse;
 import tp2.partie.objets.voiture.Voiture;
 
 /**
@@ -62,13 +64,10 @@ public class Partie extends Thread {
 
     private Partie() {
 
-
         RouteDroite rDini = new RouteDroite(mDimension);
         rDini.setPasladernierroute(true);
 
         RouteTransition.setLongueur(mDimension.height * 3);
-
-
 
         int decalageY = (RouteTransition.getLongueur() + RouteDroite.getLongueur() * 2 / 3);
         RouteDroite rDfinal = new RouteDroite(decalageY, rDini);
@@ -112,7 +111,7 @@ public class Partie extends Thread {
     public void run() {
 
         mRetirer.start();
-        mCollisions.start();
+        //mCollisions.start();
 
         while (mRunning) {
 
@@ -161,11 +160,10 @@ public class Partie extends Thread {
             pewpew.deplacement();
         }
 
-        synchronized (mVoitures) {
-            for (Voiture toto : mVoitures) {
-                toto.deplacement();
-            }
+        for (Voiture toto : mVoitures) {
+            toto.deplacement();
         }
+
         for (Explosion explo : explosions) {
             explo.deplacement();
         }
@@ -179,6 +177,7 @@ public class Partie extends Thread {
     public void detecterCollision() {
         // Joueur
         Rectangle rJoueur = mJoueur.getCONTOUR();
+
         if (collisionArbre(rJoueur)) {
             explosions.add(new Explosion(mJoueur.getX(), mJoueur.getY()));
         }
@@ -204,14 +203,27 @@ public class Partie extends Thread {
             }
             // Colision tir-route pas pertinente a faire.
         }
+
         // Voiture
-        for (Voiture toto : Partie.getInstance().getVoitures()) {           
-  
-            
+        for (Voiture toto : Partie.getInstance().getVoitures()) {
+
+            Rectangle preRectangle = new Rectangle(rJoueur.x - 24, rJoueur.y - (mJoueur.getVitessemax() - 1), rJoueur.width + 48, rJoueur.height + (mJoueur.getVitessemax() - 1));
+
+            if (toto.getCONTOUR().intersects(preRectangle)) {
+                toto.preCollision(mJoueur);
+            }
+
+            // Collisions de voiture
             Rectangle rVoiture = toto.getCONTOUR();
             if (collisionVoiture(rVoiture, true)) {
                 System.out.println("Collision Voiture - Voiture");
+
+                // Traitement pour collision voiture-voiture               
+
+
             }
+
+
             if (collisionArbre(rVoiture)) {
                 mortVoiture(toto);
             }
@@ -221,13 +233,13 @@ public class Partie extends Thread {
             } else if (!toto.isContactroute() && collisionRoute(rVoiture)) {
                 toto.setContactroute(true);
             }
-            
+
             if (rVoiture.intersects(rJoueur)) {
                 System.out.println("Collision Voiture - Joueur");
             }
 
         }
-        
+
     }
 
     public boolean collisionRoute(Rectangle pRectangle) {
@@ -324,6 +336,17 @@ public class Partie extends Thread {
 
     private void genererVoiture() {
         Random r = new Random();
+
+        Rectangle rect2 = getRectRouteLocation(-r.nextInt(-RETRAITHAUT));
+
+        if (r.nextInt(5) == 0) {
+            mVoitures.add(new Limousine(rect2.x + rect2.width / 2, RETRAITHAUT));
+            mVoitures.add(new Tamponneuse(rect2.x + rect2.width / 2, RETRAITHAUT));
+            mVoitures.add(new Blindee(rect2.x + rect2.width / 2, RETRAITHAUT));
+        }
+
+
+
         if (r.nextInt(30) == 0) {
 
             int i = r.nextInt(30);
@@ -620,8 +643,7 @@ public class Partie extends Thread {
 
                         if (c != c2 && c.getCollisionRectangle().intersects(target)) {
                             c.collision(c2);
-                            System.out.println("collision");
-                            return;
+                            System.out.println("collision " + c + " avec " + c2);
                         }
 
                         final Rectangle preRectangle = new Rectangle(c.getCollisionRectangle().x - 24, c.getCollisionRectangle().y - (mJoueur.getVitessemax() - 1), c.getCollisionRectangle().width + 48, c.getCollisionRectangle().height + (mJoueur.getVitessemax() - 1));
@@ -629,6 +651,8 @@ public class Partie extends Thread {
 
                         if (c != c2 && c.getCollisionRectangle().intersects(preRectangle)) {
                             c.preCollision(c2);
+                            System.out.println("precollision " + c + " avec " + c2);
+
                         }
 
 

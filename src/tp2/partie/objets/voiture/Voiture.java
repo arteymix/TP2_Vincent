@@ -200,6 +200,8 @@ abstract public class Voiture extends ObjGenerique {
             this.setVx(-Math.abs(this.getDeplacementlateral()));
         }
 
+
+
         if (true) {
             return;
         }
