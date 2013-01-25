@@ -7,6 +7,7 @@ package tp2.partie;
 import java.io.Serializable;
 
 /**
+ * Interface pour afficher les meilleurs scores.
  *
  * @author user1
  */

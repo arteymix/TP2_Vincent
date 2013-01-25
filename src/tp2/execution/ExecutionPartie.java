@@ -54,14 +54,14 @@ public class ExecutionPartie {
                 break;
             // Controle de la musique
             case KeyEvent.VK_B:
-                Son s = Partie.getInstance().getS();
+                Son s = Partie.getInstance().getSon();
                 s.setBit8(!s.getBit8());
                 break;
             case KeyEvent.VK_M:
-                Partie.getInstance().getS().muteAll();
+                Partie.getInstance().getSon().muteAll();
                 break;
             case KeyEvent.VK_N:
-                Partie.getInstance().getS().changerToune();
+                Partie.getInstance().getSon().changerToune();
                 break;
 
             case 45: // =

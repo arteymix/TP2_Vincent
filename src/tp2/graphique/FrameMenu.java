@@ -4,6 +4,7 @@
  */
 package tp2.graphique;
 
+import tp2.graphique.panels.PanelPause;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -15,11 +16,15 @@ import javax.swing.JOptionPane;
 import tp2.partie.Partie;
 
 /**
- *
+ * Vue pour le menu.
+ * 
  * @author Vincent
  */
 public class FrameMenu extends JFrame implements KeyListener {
 
+    /**
+     * Singleton.
+     */
     private static FrameMenu instance = new FrameMenu();
 
     public static FrameMenu getInstance() {
@@ -30,8 +35,17 @@ public class FrameMenu extends JFrame implements KeyListener {
      */
     private Dimension mDimension = new Dimension(1000, 700);
     private Image mBackground, mFleche;
-    private PnlPause mPanelPause = new PnlPause();
+    
+    /**
+     * Panneau du jeu en pause
+     */
+    private PanelPause mPanelPause = new PanelPause();
+    
+    /**
+     * Position de la fèche
+     */
     private int mFlecheX = 20, mFlecheY = 480;
+    
     /**
      * Menu sélectionné
      */

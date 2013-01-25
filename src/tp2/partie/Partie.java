@@ -30,6 +30,7 @@ import tp2.partie.objets.voiture.Tamponneuse;
 import tp2.partie.objets.voiture.Voiture;
 
 /**
+ * Classe qui représente une partie.
  *
  * @author Vincent
  */
@@ -38,29 +39,45 @@ public class Partie extends Thread {
     private final static Dimension mDimension = new Dimension(1000, 700);
     private static int RETRAITHAUT;
     private static int RETRAITBAS;
+    /**
+     * Singleton.
+     */
     private static Partie instance;
+    /**
+     * Système de son de la partie.
+     */
     private Son mSon;
+    /**
+     * Vue pour la partie.
+     */
     private FramePartie mFramePartie;
-    private final CopyOnWriteArrayList<Arbre> arbres = new CopyOnWriteArrayList<Arbre>();
-    private final CopyOnWriteArrayList<Tir> tirs = new CopyOnWriteArrayList<Tir>();
+    // Listes des objets
+    private final CopyOnWriteArrayList<Arbre> mArbres = new CopyOnWriteArrayList<Arbre>();
+    private final CopyOnWriteArrayList<Tir> mTirs = new CopyOnWriteArrayList<Tir>();
     private final CopyOnWriteArrayList<Voiture> mVoitures = new CopyOnWriteArrayList<Voiture>();//Auto civiles
-    private final CopyOnWriteArrayList<Route> routes = new CopyOnWriteArrayList<Route>();
-    private final CopyOnWriteArrayList<Explosion> explosions = new CopyOnWriteArrayList<Explosion>();
-    private final HashSet<ObjGenerique> mObjGeneriques = new HashSet<ObjGenerique>();
-    private CopyOnWriteArrayList<Huile> mListeHuile = new CopyOnWriteArrayList<Huile>();
+    private final CopyOnWriteArrayList<Route> mRoutes = new CopyOnWriteArrayList<Route>();
+    private final CopyOnWriteArrayList<Explosion> mExplosions = new CopyOnWriteArrayList<Explosion>();
+    private final CopyOnWriteArrayList<Huile> mListeHuile = new CopyOnWriteArrayList<Huile>();
+    /**
+     * Joueur de la partie.
+     */
     private Joueur mJoueur;
+    /**
+     * Liste des backgrounds.
+     */
     private ArrayList<Background> pnlBackground = new ArrayList<Background>();
-    private static boolean pause;
+    /**
+     * Gestionnaire de collision (non implémenté).
+     */
     private Collisions mCollisions = new Collisions();
+    /**
+     * Gestion des retraits.
+     */
     private Retirer mRetirer = new Retirer();
     /**
      * Détermine si le jeu est en cours
      */
     private boolean mRunning = true;
-
-    public Joueur getJoueur() {
-        return mJoueur;
-    }
 
     private Partie() {
 
@@ -74,9 +91,9 @@ public class Partie extends Thread {
 
 
         RouteTransition pRouteTransition = new RouteTransition(rDini, rDfinal, RouteDroite.getLongueur() * 2 / 3);
-        routes.add(rDini);
-        routes.add(pRouteTransition);
-        routes.add(rDfinal);
+        mRoutes.add(rDini);
+        mRoutes.add(pRouteTransition);
+        mRoutes.add(rDfinal);
 
         RETRAITHAUT = -2 * RouteDroite.getLongueur() - RouteTransition.getLongueur();
         RETRAITBAS = RouteDroite.getLongueur() + RouteTransition.getLongueur();
@@ -124,7 +141,7 @@ public class Partie extends Thread {
                 deplacement();
                 detecterCollision();
                 generer();
-                retirer();
+                //retirer();
                 mFramePartie.invalidate();
                 mFramePartie.repaint();
 
@@ -148,15 +165,15 @@ public class Partie extends Thread {
             background.deplacement();
         }
 
-        for (Route route : routes) {
+        for (Route route : mRoutes) {
             route.deplacement();
         }
 
-        for (Arbre branche : arbres) {
+        for (Arbre branche : mArbres) {
             branche.deplacement();
         }
 
-        for (Tir pewpew : tirs) {
+        for (Tir pewpew : mTirs) {
             pewpew.deplacement();
         }
 
@@ -164,7 +181,7 @@ public class Partie extends Thread {
             toto.deplacement();
         }
 
-        for (Explosion explo : explosions) {
+        for (Explosion explo : mExplosions) {
             explo.deplacement();
         }
 
@@ -179,7 +196,7 @@ public class Partie extends Thread {
         Rectangle rJoueur = mJoueur.getCONTOUR();
 
         if (collisionArbre(rJoueur)) {
-            explosions.add(new Explosion(mJoueur.getX(), mJoueur.getY()));
+            mExplosions.add(new Explosion(mJoueur.getX(), mJoueur.getY()));
         }
 
         if (collisionVoiture(rJoueur, false)) {
@@ -193,7 +210,7 @@ public class Partie extends Thread {
         }
 
         // Tir
-        for (Tir tir : tirs) {
+        for (Tir tir : mTirs) {
             Rectangle rTir = tir.getCONTOUR();
             if (collisionVoiture(rTir, false)) {
                 System.out.println("Collision Tir - Voiture");
@@ -243,9 +260,9 @@ public class Partie extends Thread {
     }
 
     public boolean collisionRoute(Rectangle pRectangle) {
-        synchronized (routes) {
+        synchronized (mRoutes) {
 
-            for (Route route : routes) {
+            for (Route route : mRoutes) {
                 ArrayList<Rectangle> rRoutelist = route.getBounds();
                 for (Rectangle rRoute : rRoutelist) {
                     if (pRectangle.intersects(rRoute)) {
@@ -258,8 +275,8 @@ public class Partie extends Thread {
     }
 
     public boolean collisionArbre(Rectangle rObjgenerique) {
-        synchronized (arbres) {
-            for (Arbre branche : arbres) {
+        synchronized (mArbres) {
+            for (Arbre branche : mArbres) {
                 Rectangle rArbre = branche.getCONTOUR();
                 if (rObjgenerique.intersects(rArbre)) {
                     return true;
@@ -287,7 +304,7 @@ public class Partie extends Thread {
     }
 
     public boolean collisionTir(Rectangle rObjgenerique) {
-        for (Tir tir : tirs) {
+        for (Tir tir : mTirs) {
             Rectangle rTir = tir.getCONTOUR();
             if (rObjgenerique.intersects(rTir)) {
                 return true;
@@ -307,7 +324,7 @@ public class Partie extends Thread {
     private void generer() {
         RouteDroite rDfinal = null;
         Route rTr = null;
-        for (Route route : routes) {
+        for (Route route : mRoutes) {
             if (route instanceof RouteDroite && route.getLocationY() >= -RouteDroite.getLongueur()) {
                 if (!((RouteDroite) route).isPasladernierroute()) {
                     RouteDroite rDini = (RouteDroite) route;
@@ -318,8 +335,8 @@ public class Partie extends Thread {
             }
         }
         if (rDfinal != null && rTr != null) {
-            routes.add(rTr);
-            routes.add((Route) rDfinal);
+            mRoutes.add(rTr);
+            mRoutes.add((Route) rDfinal);
             genererArbre(rTr);
             genererArbre(rDfinal);
         }
@@ -403,7 +420,7 @@ public class Partie extends Thread {
                     if (xyz == 0) {
                         Arbre branche = new Arbre(positionX, y);
                         if (!collisionRoute(branche.getCONTOUR())) {
-                            arbres.add(branche);
+                            mArbres.add(branche);
                         }
                     }
                 }
@@ -419,7 +436,7 @@ public class Partie extends Thread {
                     if (xyz == 0) {
                         Arbre branche = new Arbre(positionX, rect.y);
                         if (!collisionRoute(branche.getCONTOUR())) {
-                            arbres.add(branche);
+                            mArbres.add(branche);
                         }
                     }
                 }
@@ -427,14 +444,17 @@ public class Partie extends Thread {
         }
     }
 
+    /**
+     * Retire les voitures périmées.
+     */
     private void retirer() {
 
-        if (routes.get(0).getLocationY() > RETRAITBAS) {
-            routes.remove(0);
+        if (mRoutes.get(0).getLocationY() > RETRAITBAS) {
+            mRoutes.remove(0);
         }
 
-        if (arbres.get(0).getY() > RETRAITBAS) {
-            arbres.remove(0);
+        if (mArbres.get(0).getY() > RETRAITBAS) {
+            mArbres.remove(0);
         }
 
         for (Voiture toto : mVoitures) {
@@ -445,9 +465,9 @@ public class Partie extends Thread {
             }
         }
 
-        for (Tir pewpew : tirs) {
+        for (Tir pewpew : mTirs) {
             if (pewpew.getY() < RETRAITHAUT) {
-                tirs.remove(pewpew);
+                mTirs.remove(pewpew);
             }
         }
 
@@ -460,7 +480,7 @@ public class Partie extends Thread {
     }
 
     private void mortVoiture(Voiture toto) {
-        explosions.add(new Explosion(toto.getX(), toto.getY()));
+        mExplosions.add(new Explosion(toto.getX(), toto.getY()));
         toto.setVivant(false);
         synchronized (mVoitures) {
             mVoitures.remove(toto);
@@ -478,7 +498,7 @@ public class Partie extends Thread {
             mJoueur.setTirgauche(true);
         }
 
-        tirs.add(new Tir((mJoueur.getX() + add + mJoueur.getLARGEUR() / 2), mJoueur.getY()));
+        mTirs.add(new Tir((mJoueur.getX() + add + mJoueur.getLARGEUR() / 2), mJoueur.getY()));
     }
 
     private boolean testProblemeVoiture(Rectangle testRect) {
@@ -491,7 +511,7 @@ public class Partie extends Thread {
     // Getter et Setter
     public Rectangle getRectRouteLocation(int locationYcherche) {
         Route r = null;
-        for (Route route : routes) {
+        for (Route route : mRoutes) {
             if (locationYcherche > route.getLocationY()) {
                 r = route;
                 break;
@@ -516,11 +536,9 @@ public class Partie extends Thread {
         return mFramePartie;
     }
 
-    public void setPause(boolean isPause) {
-        pause = isPause;
-        mFramePartie.setPause(isPause);
-    }
-
+    /**
+     * Obtenir l'instance du singleton.
+     */
     public static Partie getInstance() {
 
         if (instance == null) {
@@ -530,6 +548,11 @@ public class Partie extends Thread {
         return instance;
     }
 
+    /**
+     * Réinstancie le singleton.
+     *
+     * @return la nouvelle instance de partie.
+     */
     public static Partie newInstance() {
         instance = new Partie();
         return instance;
@@ -540,11 +563,11 @@ public class Partie extends Thread {
     }
 
     public CopyOnWriteArrayList<Arbre> getArbres() {
-        return arbres;
+        return mArbres;
     }
 
     public CopyOnWriteArrayList<Tir> getTirs() {
-        return tirs;
+        return mTirs;
     }
 
     public CopyOnWriteArrayList<Voiture> getVoitures() {
@@ -552,14 +575,18 @@ public class Partie extends Thread {
     }
 
     public CopyOnWriteArrayList<Route> getRoutes() {
-        return routes;
+        return mRoutes;
     }
 
     public CopyOnWriteArrayList<Explosion> getExplosions() {
-        return explosions;
+        return mExplosions;
     }
 
-    public Son getS() {
+    public Joueur getJoueur() {
+        return mJoueur;
+    }
+
+    public Son getSon() {
         return mSon;
     }
 
@@ -572,7 +599,18 @@ public class Partie extends Thread {
     }
 
     /**
+     * Met le jeux en pause.
+     *
+     * @param isPause
+     */
+    public void setPause(boolean isPause) {
+        mFramePartie.setPause(isPause);
+    }
+
+    /**
      * Gestion des retraits asynchrome.
+     *
+     * @author Vincent
      */
     public class Retirer extends Thread {
 
@@ -583,13 +621,13 @@ public class Partie extends Thread {
 
                 System.out.println("haha");
 
-                if (routes.get(0).getLocationY() > RETRAITBAS) {
-                    routes.remove(0);
+                if (mRoutes.get(0).getLocationY() > RETRAITBAS) {
+                    mRoutes.remove(0);
                 }
 
 
-                if (arbres.get(0).getY() > RETRAITBAS) {
-                    arbres.remove(0);
+                if (mArbres.get(0).getY() > RETRAITBAS) {
+                    mArbres.remove(0);
                 }
 
 
@@ -601,9 +639,9 @@ public class Partie extends Thread {
 
 
 
-                for (Tir pewpew : tirs) {
+                for (Tir pewpew : mTirs) {
                     if (pewpew.getY() < RETRAITHAUT) {
-                        tirs.remove(pewpew);
+                        mTirs.remove(pewpew);
                     }
                 }
 
@@ -624,6 +662,7 @@ public class Partie extends Thread {
     }
 
     /**
+     * Gestion des collisions asynchrome. Pas encore implémenté.
      *
      * @author Vincent
      */

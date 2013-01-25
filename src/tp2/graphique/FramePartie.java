@@ -4,6 +4,7 @@
  */
 package tp2.graphique;
 
+import tp2.graphique.panels.PanelPause;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,12 +20,12 @@ import tp2.execution.ExecutionPause;
 public class FramePartie extends JFrame {
 
     private Carte pnlBoard;
-    private PnlPause fpause;
+    private PanelPause fpause;
     private Dimension dFrame = new Dimension(1005, 775);
     private Stats stat;
 
     public FramePartie(Dimension dPnlBoard) {
-        fpause = new PnlPause();
+        fpause = new PanelPause();
         pnlBoard = new Carte(dPnlBoard);
         stat = new Stats();
         this.add(pnlBoard);
