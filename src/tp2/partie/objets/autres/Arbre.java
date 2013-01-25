@@ -26,13 +26,14 @@ public class Arbre extends ObjGenerique {
         img = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("./Ressources/arbre.png"));
     }
 
-    public static Image getImg() {
+    public Image getImg() {
         return img;
     }
 
     public static int getArbreLARGEUR() {
         return LARGEUR;
     }
+
 
    
 }

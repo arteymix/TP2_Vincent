@@ -9,12 +9,14 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.LineUnavailableException;
 import tp2.graphique.Carte;
 import tp2.graphique.FramePartie;
-import tp2.partie.collisions.Collisions;
+import tp2.graphique.Stats;
+import tp2.partie.collisions.Collisionnable;
 import tp2.partie.objets.armes.Huile;
 import tp2.partie.objets.autres.Background;
 import tp2.partie.objets.autres.ObjGenerique;
@@ -37,14 +39,13 @@ public class Partie extends Thread {
     private static Partie instance;
     private Son mSon;
     private FramePartie mFramePartie;
-    private final ArrayList<Arbre> arbres = new ArrayList<Arbre>();
-    private final ArrayList<Tir> tirs = new ArrayList<Tir>();
-    private final ArrayList<Voiture> voitures = new ArrayList<Voiture>();//Auto civiles
-    private final ArrayList<Route> routes = new ArrayList<Route>();
-    private final ArrayList<Explosion> explosions = new ArrayList<Explosion>();
+    private final CopyOnWriteArrayList<Arbre> arbres = new CopyOnWriteArrayList<Arbre>();
+    private final CopyOnWriteArrayList<Tir> tirs = new CopyOnWriteArrayList<Tir>();
+    private final CopyOnWriteArrayList<Voiture> mVoitures = new CopyOnWriteArrayList<Voiture>();//Auto civiles
+    private final CopyOnWriteArrayList<Route> routes = new CopyOnWriteArrayList<Route>();
+    private final CopyOnWriteArrayList<Explosion> explosions = new CopyOnWriteArrayList<Explosion>();
     private final HashSet<ObjGenerique> mObjGeneriques = new HashSet<ObjGenerique>();
-
-    private ArrayList<Huile> mListeHuile = new ArrayList<Huile>();
+    private CopyOnWriteArrayList<Huile> mListeHuile = new CopyOnWriteArrayList<Huile>();
     private Joueur mJoueur;
     private ArrayList<Background> pnlBackground = new ArrayList<Background>();
     private static boolean pause;
@@ -59,68 +60,16 @@ public class Partie extends Thread {
         return mJoueur;
     }
 
-    /**
-     * Gestion des retraits asynchrome.
-     */
-    public class Retirer extends Thread {
-
-        @Override
-        public void run() {
-
-            while (mRunning) {
-
-                System.out.println("haha");
-
-                synchronized (routes) {
-                    if (routes.get(0).getLocationY() > RETRAITBAS) {
-                        routes.remove(0);
-                    }
-                }
-
-                synchronized (arbres) {
-                    if (arbres.get(0).getY() > RETRAITBAS) {
-                        arbres.remove(0);
-                    }
-                }
-
-                synchronized (voitures) {
-                    for (Voiture toto : voitures) {
-                        if (toto.getY() > RETRAITBAS || toto.getY() < RETRAITHAUT || !toto.isVivant()) {
-                            voitures.remove(toto);
-                        }
-                    }
-                }
-
-                synchronized (tirs) {
-
-                    for (Tir pewpew : tirs) {
-                        if (pewpew.getY() < RETRAITHAUT) {
-                            tirs.remove(pewpew);
-                        }
-                    }
-                }
-
-                if (pnlBackground.get(0).getY() > mFramePartie.getPnlBoard().getHeight()) {
-                    Background b = pnlBackground.get(0);
-                    pnlBackground.remove(0);
-                    pnlBackground.add(b);
-                    pnlBackground.get(1).setY(pnlBackground.get(0).getY() - Background.getLongueur());
-                }
-                try {
-                    sleep(5);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Partie.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
     private Partie() {
 
-        RouteDroite rDini = new RouteDroite(mDimension);
+         
+               RouteDroite rDini = new RouteDroite(mDimension);
         rDini.setPasladernierroute(true);
 
         RouteTransition.setLongueur(mDimension.height * 3);
+        
+
+        
         int decalageY = (RouteTransition.getLongueur() + RouteDroite.getLongueur() * 2 / 3);
         RouteDroite rDfinal = new RouteDroite(decalageY, rDini);
 
@@ -136,6 +85,8 @@ public class Partie extends Thread {
         mJoueur = new Joueur(getRectRouteLocation(500).x + getRectRouteLocation(500).width / 2);
         Rectangle rectJoueur = getRectRouteLocation(mJoueur.getY());
         mJoueur.setX(rectJoueur.width / 2 + rectJoueur.x);
+        
+        mVoitures.add(mJoueur);
 
         genererArbre(rDini);
         genererArbre(pRouteTransition);
@@ -164,14 +115,16 @@ public class Partie extends Thread {
     public void run() {
 
         mRetirer.start();
+        mCollisions.start();
 
         while (mRunning) {
 
             try {
 
-                for (Voiture toto : voitures) {
+                for (Voiture toto : mVoitures) {
                     toto.actions();
                 }
+
                 deplacement();
                 detecterCollision();
                 generer();
@@ -211,17 +164,18 @@ public class Partie extends Thread {
             pewpew.deplacement();
         }
 
-        for (Voiture toto : voitures) {
-            toto.deplacement();
+        synchronized (mVoitures) {
+            for (Voiture toto : mVoitures) {
+                toto.deplacement();
+            }
         }
-
         for (Explosion explo : explosions) {
             explo.deplacement();
         }
-        
-        for(Huile pHuile : mListeHuile){
+
+        for (Huile pHuile : mListeHuile) {
             pHuile.deplacement();
-            
+
         }
     }
 
@@ -241,7 +195,7 @@ public class Partie extends Thread {
         }
 
         // Tir
-        for (Tir tir : (ArrayList<Tir>) tirs.clone()) {
+        for (Tir tir : tirs) {
             Rectangle rTir = tir.getCONTOUR();
             if (collisionVoiture(rTir, false)) {
                 System.out.println("Collision Tir - Voiture");
@@ -252,7 +206,7 @@ public class Partie extends Thread {
             // Colision tir-route pas pertinente a faire.
         }
         // Voiture
-        for (Voiture toto : (ArrayList<Voiture>) Partie.getInstance().getVoitures().clone()) {
+        for (Voiture toto : Partie.getInstance().getVoitures()) {
             Rectangle rVoiture = toto.getCONTOUR();
             if (collisionVoiture(rVoiture, true)) {
                 System.out.println("Collision Voiture - Voiture");
@@ -303,13 +257,14 @@ public class Partie extends Thread {
 
     public boolean collisionVoiture(Rectangle rObjgenerique, boolean comparaisonVoitureVoiture) {
         int i = 0;
-        for (Voiture toto : voitures) {
+        for (Voiture toto : mVoitures) {
             Rectangle rVoiture = toto.getCONTOUR();
             if (rObjgenerique.intersects(rVoiture)) {
                 i++;
 
             }
         }
+
         if (i >= 2 && comparaisonVoitureVoiture) {
             return true;
         } else {
@@ -318,7 +273,7 @@ public class Partie extends Thread {
     }
 
     public boolean collisionTir(Rectangle rObjgenerique) {
-        for (Tir tir : (ArrayList<Tir>) tirs.clone()) {
+        for (Tir tir : tirs) {
             Rectangle rTir = tir.getCONTOUR();
             if (rObjgenerique.intersects(rTir)) {
                 return true;
@@ -359,19 +314,19 @@ public class Partie extends Thread {
     }
     // generer un nombre aleatoire entre 0 et 29 de voiture a chaque creation de route pour un maximum de 30 auto dans la partie.
 
-    private void genererHuile(){
-        if(mJoueur.isLacheHuile()){
+    private void genererHuile() {
+        if (mJoueur.isLacheHuile()) {
             mJoueur.addHuile();
         }
     }
-    
+
     private void genererVoiture() {
         Random r = new Random();
         if (r.nextInt(30) == 0) {
 
             int i = r.nextInt(30);
-            if (i + voitures.size() > 30) {
-                i = 30 - voitures.size();
+            if (i + mVoitures.size() > 30) {
+                i = 30 - mVoitures.size();
             }
             for (; i > 0; i = i - 1) {
                 Voiture toto;
@@ -399,8 +354,9 @@ public class Partie extends Thread {
     private void addNewVoiture(Voiture toto) {
         Rectangle rToto = toto.getCONTOUR();
         if (!collisionVoiture(rToto, false) && !collisionTir(rToto)) {
-            voitures.add(toto);
-            mCollisions.registerCollisionnable(toto);
+            synchronized (mVoitures) {
+                mVoitures.add(toto);
+            }
         }
     }
 
@@ -456,13 +412,15 @@ public class Partie extends Thread {
             arbres.remove(0);
         }
 
-        for (Voiture toto : (ArrayList<Voiture>) voitures.clone()) {
+        for (Voiture toto : mVoitures) {
             if (toto.getY() > RETRAITBAS || toto.getY() < RETRAITHAUT || !toto.isVivant()) {
-                voitures.remove(toto);
+                synchronized (mVoitures) {
+                    mVoitures.remove(toto);
+                }
             }
         }
 
-        for (Tir pewpew : (ArrayList<Tir>) tirs.clone()) {
+        for (Tir pewpew : tirs) {
             if (pewpew.getY() < RETRAITHAUT) {
                 tirs.remove(pewpew);
             }
@@ -479,7 +437,9 @@ public class Partie extends Thread {
     private void mortVoiture(Voiture toto) {
         explosions.add(new Explosion(toto.getX(), toto.getY()));
         toto.setVivant(false);
-        voitures.remove(toto);
+        synchronized (mVoitures) {
+            mVoitures.remove(toto);
+        }
     }
 
     public void tirJoueur() {
@@ -545,7 +505,7 @@ public class Partie extends Thread {
         return instance;
     }
 
-    public static Partie newInstance() {
+    public static Partie newInstance() {        
         instance = new Partie();
         return instance;
     }
@@ -554,23 +514,23 @@ public class Partie extends Thread {
         return mJoueur;
     }
 
-    public ArrayList<Arbre> getArbres() {
+    public CopyOnWriteArrayList<Arbre> getArbres() {
         return arbres;
     }
 
-    public ArrayList<Tir> getTirs() {
+    public CopyOnWriteArrayList<Tir> getTirs() {
         return tirs;
     }
 
-    public ArrayList<Voiture> getVoitures() {
-        return voitures;
+    public CopyOnWriteArrayList<Voiture> getVoitures() {
+        return mVoitures;
     }
 
-    public ArrayList<Route> getRoutes() {
+    public CopyOnWriteArrayList<Route> getRoutes() {
         return routes;
     }
 
-    public ArrayList<Explosion> getExplosions() {
+    public CopyOnWriteArrayList<Explosion> getExplosions() {
         return explosions;
     }
 
@@ -582,9 +542,104 @@ public class Partie extends Thread {
         return pnlBackground;
     }
 
-    public ArrayList<Huile> getmListeHuile() {
+    public CopyOnWriteArrayList<Huile> getmListeHuile() {
         return mListeHuile;
     }
-    
-    
+
+    /**
+     * Gestion des retraits asynchrome.
+     */
+    public class Retirer extends Thread {
+
+        @Override
+        public void run() {
+
+            while (mRunning) {
+
+                System.out.println("haha");
+
+                if (routes.get(0).getLocationY() > RETRAITBAS) {
+                    routes.remove(0);
+                }
+
+
+                if (arbres.get(0).getY() > RETRAITBAS) {
+                    arbres.remove(0);
+                }
+
+
+                for (Voiture toto : mVoitures) {
+                    if (toto.getY() > RETRAITBAS || toto.getY() < RETRAITHAUT || !toto.isVivant()) {
+                        mVoitures.remove(toto);
+                    }
+                }
+
+
+
+                for (Tir pewpew : tirs) {
+                    if (pewpew.getY() < RETRAITHAUT) {
+                        tirs.remove(pewpew);
+                    }
+                }
+
+
+                if (pnlBackground.get(0).getY() > mFramePartie.getPnlBoard().getHeight()) {
+                    Background b = pnlBackground.get(0);
+                    pnlBackground.remove(0);
+                    pnlBackground.add(b);
+                    pnlBackground.get(1).setY(pnlBackground.get(0).getY() - Background.getLongueur());
+                }
+                try {
+                    sleep(5);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Partie.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @author Vincent
+     */
+    public class Collisions extends Thread {
+
+        @Override
+        public void run() {
+
+            while (mRunning) {
+
+                for (Collisionnable c : mVoitures) {
+
+                    for (Collisionnable c2 : mVoitures) {
+
+                        final Rectangle target = c2.getCollisionRectangle();
+
+
+                        if (c != c2 && c.getCollisionRectangle().intersects(target)) {
+                            c.collision(c2);
+                            System.out.println("collision");
+                            return;
+                        }
+
+                        final Rectangle preRectangle = new Rectangle(c.getCollisionRectangle().x - 24, c.getCollisionRectangle().y - (mJoueur.getVitessemax() - 1), c.getCollisionRectangle().width + 48, c.getCollisionRectangle().height + (mJoueur.getVitessemax() - 1));
+
+
+                        if (c != c2 && c.getCollisionRectangle().intersects(preRectangle)) {
+                            c.preCollision(c2);
+                        }
+
+
+
+                    }
+                }
+                try {
+                    sleep(10);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(tp2.partie.collisions.Collisions.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        }
+    }
 }

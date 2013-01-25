@@ -4,8 +4,7 @@
  */
 package tp2.partie.objets.armes;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
+import java.awt.Image;
 import tp2.partie.objets.autres.ObjGenerique;
 import tp2.partie.objets.voiture.Joueur;
 
@@ -22,5 +21,10 @@ public class Huile extends ObjGenerique {
     public Huile(Joueur pJoueur) {
         super((int) pJoueur.getLARGEUR(), Joueur.getVitessejoueur(),(int) pJoueur.getX(), (int) (pJoueur.getY() + pJoueur.getLONGUEUR()), 0, 0);
 
+    }
+
+    @Override
+    public Image getImg() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

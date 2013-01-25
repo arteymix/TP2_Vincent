@@ -6,7 +6,6 @@ package tp2.partie.objets.route;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import tp2.partie.Partie;
 import tp2.partie.objets.voiture.Joueur;
 
 /**

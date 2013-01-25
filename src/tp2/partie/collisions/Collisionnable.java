@@ -12,11 +12,14 @@ import java.awt.Rectangle;
  */
 public interface Collisionnable {
     
+    public boolean inCollision = false;
+
     /**
      * Entre en collision avec l'objet collisionnable en parametre
      */
     public void collision(Collisionnable C);
-    
+
+    public void preCollision(Collisionnable c2);
+
     public Rectangle getCollisionRectangle();
-    
 }

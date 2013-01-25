@@ -118,6 +118,8 @@ public class Joueur extends Voiture {
         }
     }
 
+ 
+    @Override
     public Image getImg() {
         return img;
     }

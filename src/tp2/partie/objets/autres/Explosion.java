@@ -43,4 +43,9 @@ public class Explosion extends ObjGenerique {
         }
 
     }
+
+    @Override
+    public Image getImg() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
